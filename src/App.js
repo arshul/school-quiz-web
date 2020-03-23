@@ -8,8 +8,11 @@ import {
 
 import Home from './components/Home'
 import CreateQuiz from './components/CreateQuiz'
+import welcome from './components/welcome'
 import logo from './logo.svg';
 import './App.css';
+import startquiz from './components/startquiz';
+import playQuiz from './components/playQuiz';
 
 function App() {
   return (
@@ -30,8 +33,12 @@ function App() {
           {/*<Route path="/users">*/}
           {/*  <Users />*/}
           {/*</Route>*/}
-          <Route exact path="/" component={Home}/>
+          <Route exact path="/" component={welcome}/>
+          <Route exact path="/home" component={Home}/>
           <Route exact path="/create-quiz" component={CreateQuiz}/>
+          <Route exact path="/start-quiz" component={startquiz}/>
+          <Route exact path="/play-quiz/:quizId" component={playQuiz}/>
+
         </Switch>
       </div>
     </Router>

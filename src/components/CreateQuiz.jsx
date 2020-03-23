@@ -21,7 +21,8 @@ class CreateQuiz extends Component{
                     question:"",
                     imageUrl:"",
                     videoUrl:"",
-                    correct:null
+                    correct:null,
+                    team:""
                 }
             },
             quesNo:1,
@@ -45,7 +46,8 @@ class CreateQuiz extends Component{
                         question:"",
                         imageUrl:"",
                         videoUrl:"",
-                        correct:null
+                        correct:null,
+                        team : ""
             };
             this.setState({
                 quesNo:this.state.quesNo+1,
@@ -71,6 +73,11 @@ class CreateQuiz extends Component{
         questions[this.state.quesNo].correct = correct;
         this.setState({questions:questions});
     }
+    setTeam(value){
+        let questions = this.state.questions;
+        questions[this.state.quesNo].team = value;
+        this.setState({questions:questions});
+    }
     setQuestion(value){
         let questions = this.state.questions;
         questions[this.state.quesNo].question = value;
@@ -91,7 +98,9 @@ class CreateQuiz extends Component{
         return !(question.question === "" ||
             question.a === "" ||
             question.b === "" ||
+            question.team === "" ||
             question.correct == null);
+
     }
 
     createQuiz(){
@@ -105,7 +114,7 @@ class CreateQuiz extends Component{
                         ques.b
                     ],
                     correct_answer: ques.correct,
-                    team:1
+                    team:ques.team
                 };
                 if(ques.c!=="") ob.options.push(ques.c);
                 if(ques.d!=="") ob.options.push(ques.d);
@@ -137,10 +146,29 @@ class CreateQuiz extends Component{
                 <h1 className="ui center aligned header" style={{
                     color:"white"
                 }}>School Quiz</h1>
-                <div className={"ui right aligned container"} style={{marginBottom:"10px"}}>
-                    <button className={"ui icon basic compact red button"} onClick={()=>this.prevPage()}><i className={"arrow left icon"}/></button>
-                    <button className={`ui icon basic compact red button ${this.validQuestion()?'':'disabled'}`} onClick={()=>this.nextPage()} ><i className={"arrow right icon"}/></button>
+                <div className={"ui four column grid"} style={{marginBottom:"1px"}}>
+                <div className="row">
+                    <div className="column ">
+                    <div class="ui labeled input">
+                        <div class="ui label label">Team</div>
+                        <input type="text" value={questions[this.state.quesNo].team}  placeholder='Team No.' onChange={(e)=>this.setTeam(e.target.value)} />
+                        </div>
+                    
+                    </div>
+                    <div className="column ">
+                    
+                    </div>
+                    <div className="column ">
+                    
+                    </div>
+                    <div className="column">
+                        <div style={{marginLeft:150}}>
+                    <button className={"ui icon basic compact red button right align"} onClick={()=>this.prevPage()}><i className={"arrow left icon"}/></button>
+                    <button className={`ui icon basic compact red button right align ${this.validQuestion()?'':'disabled'}`} onClick={()=>this.nextPage()} ><i className={"arrow right icon"}/></button>
+                    </div>
+                    </div>
                 </div>
+                    </div>
                 <div className={"ui container"} style={{
                     borderRadius: "10px",
                     padding: "1rem",
@@ -232,7 +260,7 @@ class CreateQuiz extends Component{
                   onChange={(e)=>this.setOption(e.target.value,"d")}
                 />
                     </div>
-                <Button primary type='submit' onClick={()=>this.createQuiz()}>Create Quiz</Button>
+                <Button primary type='submit'className={`${this.state.quesNo >= 3?'':'disabled'}`} onClick={()=>this.createQuiz()}>Create Quiz</Button>
               </Form>
 
                 </div>
