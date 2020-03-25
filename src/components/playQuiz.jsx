@@ -14,8 +14,11 @@ class playQuiz extends Component{
         this.state={
             
             questions : {
-               
-                selected_answer:null
+                selected_answer:null,
+                question_attempt:0,
+                correct_question:0,
+                drop_question:0,
+                wrong_question:0,
             },
             quesNo:0,
             showInput:false,
@@ -33,20 +36,16 @@ class playQuiz extends Component{
         if(!this.state.questions[this.state.quesNo+1]){
             let questions = this.state.questions;
             questions[this.state.quesNo+1] = {
-                        a:"",
-                        b:"",
-                        c:"",
-                        d:"",
-                        question:"",
-                        imageUrl:"",
-                        videoUrl:"",
-                        correct:null,
-                        team : "",
-                        selected_answer:null
+                selected_answer:null,
+                question_attempt:this.state.question_attempt+1,
+                correct_question:this.state.correct_question+1,
+                drop_question:this.state.drop_question,
+                wrong_question:this.state.wrong_question,
 
             };
             this.setState({
                 quesNo:this.state.quesNo+1,
+                
                 questions:questions
             });
             console.log(this.state)
@@ -59,9 +58,34 @@ class playQuiz extends Component{
         questions[this.state.quesNo].selected_answer = value;
         this.setState({questions:questions});
     }
-  match(){
-    let className  
-    className= `${this.state.selected_answer == this.state.correct?<p>hii</p>:<p>wrong</p>}`
+    setque_attempt(){
+        let questions = this.state.questions;
+        questions[this.state.quesNo].question_attempt=questions[this.state.quesNo].question_attempt+1;
+        this.setState({questions:questions});
+    }
+    setque_correct(){
+        let questions = this.state.questions;
+        console.log("hii in correct");
+        questions[this.state.quesNo].correct_question=questions[this.state.quesNo].correct_question+1;
+        this.setState({questions:questions});
+    }
+    setque_wrong(){
+        let questions = this.state.questions;
+        console.log("hii in wrong");
+        questions[this.state.quesNo].wrong_question=questions[this.state.quesNo].wrong_question+1;
+        this.setState({questions:questions});
+    }
+    setque_drop(){
+        let questions = this.state.questions;
+        questions[this.state.quesNo].drop_question=questions[this.state.quesNo].drop_question+1;
+        this.setState({questions:questions});
+    }
+    setmatch(correct_ans){
+    let matching
+    console.log(this.selected_answer);
+    console.log(correct_ans);
+    matching = `${ correct_ans == this.selected_answer ? this.setque_correct() : this.setque_wrong()}`
+
   }
     componentDidMount(){
         fetch('http://localhost:5000/quizzes/'+this.props.match.params.quizId)
@@ -183,9 +207,8 @@ class playQuiz extends Component{
                                         </div> 
                                         </div> 
                                     <div  class="column"style={{marginTop:20}}>
-                                            <button class="ui button" onClick={()=>this.match}>
-                                            <div class="visible content" style={{fontWeight:"bold",fontSize:22}}>OK</div>
-                                 
+                                            <button class="ui button" onClick={()=>this.setmatch(question.correct_answer)}>
+                                            OK
                                             </button>
                                         </div>
                                     </div> 
