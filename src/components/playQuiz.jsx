@@ -1,4 +1,4 @@
-import React, {Component, isValidElement} from "react";
+import React, {Component, isValidElement, useCallback} from "react";
 import {
     Button,
     Form,
@@ -7,7 +7,7 @@ import {
     Radio
 } from "semantic-ui-react";
 import {withRouter,Link} from 'react-router-dom';
-
+var value1
 class playQuiz extends Component{
     constructor(props) {
         super(props);
@@ -54,9 +54,12 @@ class playQuiz extends Component{
         }
     }
     setSelect(value){
+        value1=value;
         let questions = this.state.questions;
         questions[this.state.quesNo].selected_answer = value;
         this.setState({questions:questions});
+       
+       
     }
     setque_attempt(){
         let questions = this.state.questions;
@@ -80,13 +83,18 @@ class playQuiz extends Component{
         questions[this.state.quesNo].drop_question=questions[this.state.quesNo].drop_question+1;
         this.setState({questions:questions});
     }
-    setmatch(correct_ans){
-    let matching
-    console.log(this.selected_answer);
-    console.log(correct_ans);
-    matching = `${ correct_ans == this.selected_answer ? this.setque_correct() : this.setque_wrong()}`
-
-  }
+    setMatch(correct_ans){
+        if(this.state.questions.selected_answer){
+            if (correct_ans == this.state.questions.selected_answer){
+                this.setque_correct();
+            }
+            else{
+                this.setque_wrong();
+            }
+        }else{
+            this.setState();
+        }
+    }
     componentDidMount(){
         fetch('http://localhost:5000/quizzes/'+this.props.match.params.quizId)
 
@@ -207,7 +215,7 @@ class playQuiz extends Component{
                                         </div> 
                                         </div> 
                                     <div  class="column"style={{marginTop:20}}>
-                                            <button class="ui button" onClick={()=>this.setmatch(question.correct_answer)}>
+                                            <button class="ui button" onClick={()=>this.setMatch(question.correct_answer)}>
                                             OK
                                             </button>
                                         </div>
