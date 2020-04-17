@@ -13,10 +13,11 @@ import logo from './logo.svg';
 import './App.css';
 import startquiz from './components/startquiz';
 import playQuiz from './components/playQuiz';
-
+import quizcreated from './components/quizcreated';
 function App() {
+  console.log('u r in app.js')
   return (
-     <Router>
+    <Router>
       <div className={"ui container"}
           style={{
                     background:"lemonchiffon",
@@ -24,6 +25,7 @@ function App() {
                     height:"100vh"
                 }}
       >
+      
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
@@ -38,8 +40,9 @@ function App() {
           <Route exact path="/create-quiz" component={CreateQuiz}/>
           <Route exact path="/start-quiz" component={startquiz}/>
           <Route exact path="/play-quiz/:quizId" component={playQuiz}/>
-
+          <Route exact path="/quiz-created" component={quizcreated}/>
         </Switch>
+        
       </div>
     </Router>
   );

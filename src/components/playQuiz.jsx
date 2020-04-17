@@ -1,10 +1,6 @@
-import React, {Component, isValidElement, useCallback} from "react";
+import React, {Component} from "react";
 import {
-    Button,
-    Form,
-    Input,
-    Icon,
-    Radio
+    Icon
 } from "semantic-ui-react";
 import {withRouter,Link} from 'react-router-dom';
 var value1
@@ -37,8 +33,8 @@ class playQuiz extends Component{
             let questions = this.state.questions;
             questions[this.state.quesNo+1] = {
                 selected_answer:null,
-                question_attempt:this.state.question_attempt+1,
-                correct_question:this.state.correct_question+1,
+                question_attempt:this.state.question_attempt,
+                correct_question:this.state.correct_question,
                 drop_question:this.state.drop_question,
                 wrong_question:this.state.wrong_question,
 
@@ -62,38 +58,51 @@ class playQuiz extends Component{
        
     }
     setque_attempt(){
+        console.log("ur in attempt")
         let questions = this.state.questions;
-        questions[this.state.quesNo].question_attempt=questions[this.state.quesNo].question_attempt+1;
+        questions.question_attempt=questions.question_attempt+1;
         this.setState({questions:questions});
     }
     setque_correct(){
         let questions = this.state.questions;
+        console.log(questions[this.state.quesNo].correct_question)
         console.log("hii in correct");
         questions[this.state.quesNo].correct_question=questions[this.state.quesNo].correct_question+1;
         this.setState({questions:questions});
     }
+    myfunction(text){
+        this.setMatch(text);
+        this.setque_attempt();
+    }
     setque_wrong(){
         let questions = this.state.questions;
         console.log("hii in wrong");
-        questions[this.state.quesNo].wrong_question=questions[this.state.quesNo].wrong_question+1;
+        questions.wrong_question=questions.wrong_question+1;
         this.setState({questions:questions});
     }
     setque_drop(){
         let questions = this.state.questions;
-        questions[this.state.quesNo].drop_question=questions[this.state.quesNo].drop_question+1;
+        questions.drop_question=questions.drop_question+1;
         this.setState({questions:questions});
     }
     setMatch(correct_ans){
-        if(this.state.questions.selected_answer){
-            if (correct_ans == this.state.questions.selected_answer){
+        if(this.state.questions[this.state.quesNo].selected_answer){
+            if (correct_ans == this.state.questions[this.state.quesNo].selected_answer){
                 this.setque_correct();
             }
             else{
                 this.setque_wrong();
             }
         }else{
+            this.setque_drop();
             this.setState();
         }
+    }
+    createResult(){
+    let data = {
+
+    }
+
     }
     componentDidMount(){
         fetch('http://localhost:5000/quizzes/'+this.props.match.params.quizId)
@@ -186,7 +195,7 @@ class playQuiz extends Component{
                                             {question.options[2]}
                                             </div>
                                             <div class="column" style={{width:"5%"}}>
-                                            <Icon name='check'onClick={()=>this.setSelect(question.options[2])} inverted circular link />
+                                            <Icon name='check' onClick={()=>this.setSelect(question.options[2])} inverted circular link />
                                             </div>
 
                                         </div>
@@ -215,7 +224,7 @@ class playQuiz extends Component{
                                         </div> 
                                         </div> 
                                     <div  class="column"style={{marginTop:20}}>
-                                            <button class="ui button" onClick={()=>this.setMatch(question.correct_answer)}>
+                                            <button class="ui button" onClick={()=>this.myfunction(question.correct_answer)}>
                                             OK
                                             </button>
                                         </div>

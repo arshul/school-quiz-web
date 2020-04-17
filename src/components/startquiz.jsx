@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Button } from "semantic-ui-react";
 import { withRouter, Link } from 'react-router-dom'
 
 class startquiz extends Component {
@@ -11,10 +10,10 @@ class startquiz extends Component {
     }
     render() {
         return (
-            <div className="ui center aligned container">
-                <Link to={'/play-quiz'}><div>
-                    <button class="ui primary button">Start Quiz</button>
-                </div></Link>
+            <div className="ui center aligned container" style={{top:"300px"}}>
+                <Link to={'/play-quiz/'}>
+                    <button class="ui primary button">Play Quiz</button>
+                </Link>
             </div>
             
 

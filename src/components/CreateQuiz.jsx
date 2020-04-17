@@ -1,12 +1,12 @@
-import React, {Component, isValidElement} from "react";
+import React, {Component} from "react";
 import {
     Button,
     Form,
     Input,
-    Icon,
-    Radio
+    Icon
 } from "semantic-ui-react";
-import {withRouter,Link} from 'react-router-dom'
+import {Link} from 'react-router-dom'
+
 
 class CreateQuiz extends Component{
     constructor(props) {
@@ -102,7 +102,6 @@ class CreateQuiz extends Component{
             question.correct == null);
 
     }
-
     createQuiz(){
         let data = {
             created_by_uid: "e0d07404-e858-4ae3-b9f3-98315f2610e3",
@@ -178,6 +177,7 @@ class CreateQuiz extends Component{
                     boxShadow: "1px 1px 21px #00000017",
 
                 }}>
+               <div class="ui centered inline loader"></div>
                 <Form>
                 <Form.Field>
                   <Input value={questions[this.state.quesNo].question} label={`Q ${quesNo}`} placeholder='Write the question here. . .' onChange={(e)=>this.setQuestion(e.target.value)} />
@@ -260,12 +260,16 @@ class CreateQuiz extends Component{
                   onChange={(e)=>this.setOption(e.target.value,"d")}
                 />
                     </div>
+                <Link to={"/quiz-created"}>
                 <Button primary type='submit'className={`${this.state.quesNo >= 3?'':'disabled'}`} onClick={()=>this.createQuiz()}>Create Quiz</Button>
+                </Link>
+                
               </Form>
 
                 </div>
 
             </div>
+
         )
     }
 }
