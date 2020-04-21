@@ -1,9 +1,13 @@
 import React, {Component} from "react";
 import {
-    Icon
+    Icon,
+    Button
 } from "semantic-ui-react";
 import {withRouter,Link} from 'react-router-dom';
-var value1
+var value1=0;
+var value2=0;
+var value3=0;
+var value4=0
 class playQuiz extends Component{
     constructor(props) {
         super(props);
@@ -11,10 +15,10 @@ class playQuiz extends Component{
             
             questions : {
                 selected_answer:null,
-                question_attempt:0,
-                correct_question:0,
-                drop_question:0,
-                wrong_question:0,
+                question_attempt:null,
+                correct_question:null,
+                drop_question:null,
+                wrong_question:null
             },
             quesNo:0,
             showInput:false,
@@ -27,6 +31,7 @@ class playQuiz extends Component{
         if(this.state.quesNo>=1){
             this.setState({quesNo:this.state.quesNo-1})
         }
+        document.getElementById("toast").style.display="none";
     }
     nextPage(){
         if(!this.state.questions[this.state.quesNo+1]){
@@ -48,9 +53,10 @@ class playQuiz extends Component{
         }else{
             this.setState({quesNo:this.state.quesNo+1})
         }
+        document.getElementById("toast").style.display="none";
+        document.getElementById("main").style.display="block";
     }
     setSelect(value){
-        value1=value;
         let questions = this.state.questions;
         questions[this.state.quesNo].selected_answer = value;
         this.setState({questions:questions});
@@ -58,16 +64,18 @@ class playQuiz extends Component{
        
     }
     setque_attempt(){
-        console.log("ur in attempt")
         let questions = this.state.questions;
-        questions.question_attempt=questions.question_attempt+1;
+        value2=value2+1;
+        questions.question_attempt = value2;
+        console.log(questions.question_attempt)
         this.setState({questions:questions});
     }
     setque_correct(){
         let questions = this.state.questions;
-        console.log(questions[this.state.quesNo].correct_question)
-        console.log("hii in correct");
-        questions[this.state.quesNo].correct_question=questions[this.state.quesNo].correct_question+1;
+        value1=value1+1;
+        
+        questions.correct_question = value1;
+        console.log(questions.correct_question)
         this.setState({questions:questions});
     }
     myfunction(text){
@@ -76,14 +84,36 @@ class playQuiz extends Component{
     }
     setque_wrong(){
         let questions = this.state.questions;
-        console.log("hii in wrong");
-        questions.wrong_question=questions.wrong_question+1;
+        value3=value3+1;
+        questions.wrong_question = value3;
+        console.log(questions.wrong_question)
         this.setState({questions:questions});
     }
     setque_drop(){
         let questions = this.state.questions;
-        questions.drop_question=questions.drop_question+1;
+        value4=value4+1;
+        questions.drop_question = value4;
+        console.log(questions.drop_question)
         this.setState({questions:questions});
+    }
+    write(correct_ans){
+        document.getElementById("toast").style.display="block";
+        document.getElementById("main").style.display="none";
+        let questions = this.state.questions;
+        if (questions[this.state.quesNo].selected_answer == correct_ans){
+            document.getElementById("toast1").innerHTML="Correct Answer";
+            if(this.state.quesNo == 4){
+                document.getElementById("resultbtn").style.display="block";
+                document.getElementById("button").style.display="none";
+            }
+        }
+        else if (questions[this.state.quesNo].selected_answer != correct_ans){
+            document.getElementById("toast1").innerHTML="Wrong Answer";
+            if(this.state.quesNo == 4){
+                document.getElementById("resultbtn").style.display="block";
+                document.getElementById("button").style.display="none";
+            }
+        }
     }
     setMatch(correct_ans){
         if(this.state.questions[this.state.quesNo].selected_answer){
@@ -97,12 +127,31 @@ class playQuiz extends Component{
             this.setque_drop();
             this.setState();
         }
+     this.write(correct_ans)
     }
     createResult(){
-    let data = {
-
-    }
-
+        let data = {
+            result: [
+                {
+                    question_attempt:value2,
+                    correct_question:value1,
+                    wrong_question:value3,
+                    drop_question:value4
+                }
+                
+            ],
+            
+        };
+        
+       fetch("http://localhost:5000/result/"+this.props.match.params.quizId,{
+           method:"post",
+           headers:{
+            "content-type":"application/json"
+        },
+        body:JSON.stringify(data)
+       }).then(resp=>{
+        console.log(resp)
+    }).catch(err=>console.log(err))
     }
     componentDidMount(){
         fetch('http://localhost:5000/quizzes/'+this.props.match.params.quizId)
@@ -134,20 +183,37 @@ class playQuiz extends Component{
                 <div className="ui  container" style={{marginBottom:"5px",marginLeft:800}}>
                 <div style={{marginLeft:"90%"}}>
                     <button className={`ui icon basic compact red button right align ${(this.state.quesNo >= 1)?'':'disabled'}`} onClick={()=>this.prevPage()}><i className={"arrow left icon"}/></button>
-                    <button className={"ui icon basic compact red button right align "} onClick={()=>this.nextPage()}><i className={"arrow right icon"}/></button>
+                    <button className={`ui icon basic compact red button right align ${(this.state.quesNo == 4)?'disabled':''}`} onClick={()=>this.nextPage()}><i className={"arrow right icon"}/></button>
                     </div>
                 </div>
-                {question&&<div className={"ui container"} style={{
+                {question&&<div className={"ui container "} style={{
                     borderRadius: "10px",
                     padding: "1rem",
                     background: "white",
                     position: "relative",
                     boxShadow: "1px 1px 21px #00000017",
-                    marginTop : "7px"
-                }}>             
-                                <div class="two coloumn grid" v style={{borderWidth:1,borderRadius:2, borderColor: '#FF5722'}}>
-                                    <div class="row"style={{fontSize:"22px"}}>
-                                     <div class="ui column label " style={{fontSize:"22px",width:"8%",marginRight:"7px"}}>
+                    marginTop : "7px",
+                    overflow:"auto"
+                }}>
+                     <div className="ui container" id="toast" style={{display:"none",boxShadow:"0px 0px 5px black",height:"400px",textAlign:"center",paddingTop:"120px",fontSize:"25px"}}>
+                    <div className="ui container" id="toast1" style={{textAlign:"center",fontSize:"30px",paddingBottom:"10px"}}>
+                        
+                        </div>
+                        <div  className="column" id="button" style={{display:"block",marginTop:"10px"}}>
+                        <Button style={{fontSize:"20px"}}onClick={()=>this.nextPage()}>
+                            Ok
+                        </Button>
+                    </div>
+                    <div  className="column"id="resultbtn"style={{display:"none",fontSize:"20px",marginTop:"10px"}}>
+                        <Button onClick={()=>this.createResult()}>
+                            Submit
+                        </Button>
+                    </div>
+                    </div>
+                    <div id="main" style={{display:"block"}}>
+                                <div className="two coloumn grid" v style={{borderWidth:1,borderRadius:2, borderColor: '#FF5722'}}>
+                                    <div className="row"style={{fontSize:"22px"}}>
+                                     <div className="ui column label " style={{fontSize:"22px",width:"8%",marginRight:"7px"}}>
                                         Q : {this.state.quesNo+1}
                                      </div>
                                      
@@ -158,81 +224,77 @@ class playQuiz extends Component{
                                     <br></br>
                                     <br></br>
                             
-                                     <div class="ui  three column grid" style={{fontSize:"22px"}}>
-                                     <div class="row"style={{fontSize:"22px"}}>
-                                     <div class="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
+                                     <div className="ui  three column grid" style={{fontSize:"22px"}}>
+                                     <div className="row"style={{fontSize:"22px"}}>
+                                     <div className="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
                                                 A :
                                             </div>
-                                            <div class="column "style={{width:"85%",marginTop:10}}>
+                                            <div className="column "style={{width:"85%",marginTop:10}}>
                                             {question.options[0]}
                                             </div>
-                                            <div class="column" style={{width:"5%"}}>
+                                            <div className="column" style={{width:"5%"}}>
                                             <Icon name='check'onClick={()=>this.setSelect(question.options[0])} inverted circular link />
                                             </div>
 
                                         </div>
                                      </div>
-                                     <div class="ui  three column grid" style={{fontSize:"16px"}}>
-                                     <div class="row"style={{fontSize:"22px"}}>
-                                     <div class="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
+                                     
+                                     <div className="ui  three column grid" style={{fontSize:"16px"}}>
+                                     <div className="row"style={{fontSize:"22px"}}>
+                                     <div className="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
                                                 B :
                                             </div>
-                                            <div class="column "style={{width:"85%",marginTop:11}}>
+                                            <div className="column "style={{width:"85%",marginTop:11}}>
                                             {question.options[1]}
                                             </div>
-                                            <div class="column" style={{width:"5%"}}>
+                                            <div className="column" style={{width:"5%"}}>
                                             <Icon name='check'onClick={()=>this.setSelect(question.options[1])} inverted circular link />
                                             </div>
 
                                         </div>
                                      </div>
-                                     <div class="ui  three column grid" style={{fontSize:"16px"}}>
-                                     <div class="row"style={{fontSize:"22px"}}>
-                                     <div class="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
+                                     <div className="ui  three column grid" style={{fontSize:"16px"}}>
+                                     <div className="row"style={{fontSize:"22px"}}>
+                                     <div className="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
                                                 C :
                                             </div>
-                                            <div class="column "style={{width:"85%",marginTop:11}}>
+                                            <div className="column "style={{width:"85%",marginTop:11}}>
                                             {question.options[2]}
                                             </div>
-                                            <div class="column" style={{width:"5%"}}>
+                                            <div className="column" style={{width:"5%"}}>
                                             <Icon name='check' onClick={()=>this.setSelect(question.options[2])} inverted circular link />
                                             </div>
 
                                         </div>
                                      </div>
-                                     <div class="ui  three column grid" style={{fontSize:"16px"}}>
-                                     <div class="row"style={{fontSize:"22px"}}>
-                                     <div class="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
+                                     <div className="ui  three column grid" style={{fontSize:"16px"}}>
+                                     <div className="row"style={{fontSize:"22px"}}>
+                                     <div className="ui column label " style={{fontSize:"22px",width:"6%",marginRight:"7px",marginLeft:12}}>
                                                 D :
                                             </div>
-                                            <div class="column "style={{width:"85%",marginTop:11}}>
+                                            <div className="column "style={{width:"85%",marginTop:11}}>
                                             {question.options[3]}
                                             </div>
-                                            <div class="column" style={{width:"5%"}}>
+                                            <div className="column" style={{width:"5%"}}>
                                             <Icon name='check'onClick={()=>this.setSelect(question.options[3])} inverted circular link />
                                             </div>
 
                                         </div>
                                      
                                      </div>
-                                     <div className="ui two grid container">
-                                        <div class="row">
-                                        
-                                        <div  class="column"style={{marginTop:20,marginLeft:"45%",marginRight:"38%"}}>
-                                        <div style={{width: "100%", textAlign: "center"}}>
-                                        <span style={{fontSize:22,fontWeight:"bold"}}>60</span>
-                                        </div> 
-                                        </div> 
-                                    <div  class="column"style={{marginTop:20}}>
-                                            <button class="ui button" onClick={()=>this.myfunction(question.correct_answer)}>
+                                    
+                                    <div  className="column"style={{marginTop:20}}>
+                                            <Button className="ui button" style={{fontSize:"20px",float:"right"}} onClick={()=>this.myfunction(question.correct_answer)}>
                                             OK
-                                            </button>
+                                            </Button>
                                         </div>
+                                    
+                                   
                                     </div> 
-                                    </div>
                 </div>}
 
             </div>
+            
             
                 
         )
